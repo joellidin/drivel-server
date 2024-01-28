@@ -1,0 +1,215 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "drivel-backend"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+default = [
+    "fastapi"
+]
+test = [
+    "drivel-backend[default]",
+    "pytest>=7.0",
+    "pytest-cov",
+    "pytest-mock",
+]
+lint = [
+    "ruff",
+]
+formatter = [
+    "black>=22.3.0",
+]
+dev = [
+    "drivel-backend[test,lint,formatter]",
+    "ipython",
+    "jupyterlab",
+    "pre-commit",
+]
+
+# -------------------------------------- Tools -----------------------------------------
+
+[tool.black]
+line-length = 88
+# Uses the minimum supported Python version.
+# Must be kept in sync with the version specified in .env.dev.
+target-version = ["py310"]
+include = '\.pyi?$'
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.ipynb_checkpoints
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | .*/proto/.*
+  )/
+)
+'''
+
+[tool.jupytext]
+notebook_metadata_filter="all,-widgets,-varInspector,-jupytext.text_representation.jupytext_version,-kernelspec,-vscode"
+cell_metadata_filter="-hide_output"
+formats='notebooks///ipynb,notebooks///py:percent'
+
+# ------------------------------------- Testing ----------------------------------------
+
+[tool.pytest.ini_options]
+addopts = [
+  "-ra",
+  "--cov",
+  "--cov-config=pyproject.toml",
+  "--import-mode=importlib",
+  "--color=yes",
+]
+minversion = "7.0"
+norecursedirs = "__pycache__"
+testpaths = [
+  "tests/unit",
+]
+
+[tool.coverage.run]
+source = [
+  "drivel_backend",
+]
+omit = [
+  "*/__init__.py",
+  "*/__main__.py",
+  "*/test_*.py",
+]
+
+[tool.coverage.report]
+fail_under = 85
+show_missing = true
+exclude_lines = [
+  # Have to re-enable the standard pragma
+  "pragma: no cover",
+
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  "if self.debug",
+
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise AssertionError",
+  "raise NotImplementedError",
+
+  # Don't complain if non-runnable code isn't run:
+  "if 0:",
+  "if __name__ == .__main__.:",
+]
+
+# ---------------------------------------- Ruff ----------------------------------------
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+select = [
+  "ANN",  # flake8-annotations
+  "ARG",  # flake8-unused-arguments
+  "B",    # flake8-bugbear
+  "C4",   # flake8-comprehensions
+  "C90",  # mccabe
+  "D",    # pydocstyle
+  "DTZ",  # flake8-datetimez
+  "E",    # pycodestyle
+  "ERA",  # eradicate
+  "F",    # Pyflakes
+  "I",    # isort
+  "N",    # pep8-naming
+  "PD",   # pandas-vet
+  "PGH",  # pygrep-hooks
+  "PLC",  # Pylint
+  "PLE",  # Pylint
+  "PLR",  # Pylint
+  "PLW",  # Pylint
+  "PT",   # flake8-pytest-style
+  "Q",    # flake8-quotes
+  "RET",  # flake8-return
+  "S",    # flake8-bandit
+  "SIM",  # flake8-simplify
+  "T20",  # flake8-print
+  "TID",  # flake8-tidy-imports
+  "W",    # pycodestyle
+]
+
+exclude = [
+  ".eggs",
+  ".git",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "*.egg",
+  "*.pxd",
+  "*.pyx",
+  "__pycache__",
+  "__pypackages__",
+  "_build",
+  "build",
+  "dist",
+  "**/proto/"
+]
+
+ignore = [
+  # ================================ flake8-annotations ================================
+  "ANN002",  # Missing type annotation for *args
+  "ANN003",  # Missing type annotation for **kwargs
+  "ANN101",  # Missing type annotation for self in method
+  "ANN102",  # Missing type annotation for cls in method
+  # ==================================== pydocstyle ====================================
+  "D107",    # Missing docstring in __init__
+  "D200",    # One-line docstring should fit on one line with quotes
+  "D212",    # Multi-line docstring summary should start at the first line
+  # ================================== flake8-quotes ===================================
+  "Q000",    # Remove bad quotes
+  # ================================== flake8-bandit ===================================
+  "S101",    # Use of assert detected. The enclosed code will be removed when compiling
+             # to optimised byte code.
+]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = [
+  "F401",    # Module imported but unused
+]
+"api.py" = [
+  "F401",    # Module imported but unused
+]
+"notebooks/*" = [
+  "D100",    # Missing docstring in public module
+  "D101",    # Missing docstring in public class
+  "D102",    # Missing docstring in public method
+  "D103",    # Missing docstring in public function
+  "E402",    # Module level import not at top of file
+  "E501",    # Line too long
+  "ERA001",  # Found commented out code
+  "T201",    # print found
+]
+"tests/*" = [
+  "D100",    # Missing docstring in public module
+  "D101",    # Missing docstring in public class
+  "D102",    # Missing docstring in public method
+  "D103",    # Missing docstring in public function
+  "PLR2004", # Magic value used in comparison
+]
+
+[tool.ruff.isort]
+force-sort-within-sections = true
+known-first-party = ["drivel_backend"]
+
+[tool.ruff.mccabe]
+max-complexity = 6
+
+[tool.ruff.pydocstyle]
+convention = "google"
