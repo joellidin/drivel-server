@@ -1,0 +1,32 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  lint:
+    name: ruff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the commit that triggered the workflow
+        uses: actions/checkout@v3.5.3
+
+      - name: Load project python version from .env.dev file
+        id: dotenv
+        uses: falti/dotenv-action@v1.0.2
+        with:
+          path: ".env.dev"
+
+      - name: Setup python
+        uses: actions/setup-python@v4.6.1
+        with:
+          python-version: ${{ steps.dotenv.outputs.python_version }}
+
+      - name: Install linting dependencies
+        run: pip install -e ".[lint]"
+
+      - name: Run Ruff
+        run: ruff .
