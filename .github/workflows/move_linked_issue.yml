@@ -1,0 +1,83 @@
+name: Move Linked Issue to In Review
+
+on:
+  pull_request:
+    types: [review_requested]
+
+jobs:
+  update-issue-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract linked issue number
+        id: get-issue-number
+        run: |
+          PR_BODY=$(jq -r ".pull_request.body" "$GITHUB_EVENT_PATH")
+          ISSUE_NUMBER=$(echo "$PR_BODY" | grep -oPi '(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) #\K\d+')
+          echo "number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+
+      - name: Fetch Issue ID
+        id: get-issue-id
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          REPOSITORY_NAME: ${{ github.event.pull_request.head.repo.name }}
+          OWNER: ${{ github.event.pull_request.head.repo.owner.login }}
+          ISSUE_NUMBER: ${{ steps.get-issue-number.outputs.number }}
+        run: |
+          QUERY="{\"query\":\"query { repository(name: \\\"$REPOSITORY_NAME\\\", owner: \\\"$OWNER\\\") { issue(number: $ISSUE_NUMBER) { id } } }\"}"
+          RESPONSE=$(curl -s -X POST -H "Authorization: bearer $GITHUB_TOKEN" -H "Content-Type: application/json" --data "$QUERY" https://api.github.com/graphql)
+          ISSUE_ID=$(echo $RESPONSE | jq -r '.data.repository.issue.id')
+
+          if [ "$ISSUE_ID" != "null" ]; then
+            echo "id=$ISSUE_ID" >> $GITHUB_OUTPUT
+          else
+            echo "Issue not found or access denied."
+          fi
+
+      - name: Fetch Project Items
+        id: fetch-items
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          QUERY="{\"query\":\"query { node(id: \\\"PVT_kwHOASv0is4AbwPc\\\") { ... on ProjectV2 { items(first: 50) { nodes { id content { ... on Issue { id } } } } } } }\"}"
+          RESPONSE=$(curl -s -X POST -H "Authorization: bearer $GITHUB_TOKEN" -H "Content-Type: application/json" --data "$QUERY" https://api.github.com/graphql)
+          echo "project-items=$RESPONSE" >> $GITHUB_OUTPUT
+
+      - name: Extract Project Item ID for Issue
+        id: extract-item-id
+        env:
+          ISSUE_ID: ${{ steps.get-issue-id.outputs.id }}
+          PROJECT_ITEMS: ${{ steps.fetch-items.outputs.project-items }}
+        run: |
+          PROJECT_ITEM_ID=$(echo $PROJECT_ITEMS | jq --arg ISSUE_ID "$ISSUE_ID" '.data.node.items.nodes[] | select(.content.id == $ISSUE_ID) | .id')
+          echo $PROJECT_ITEM_ID
+          if [[ ! -z "$PROJECT_ITEM_ID" ]]; then
+            echo "id=$PROJECT_ITEM_ID" >> $GITHUB_OUTPUT
+          else
+            echo "Project Item ID for Issue not found."
+          fi
+
+      - name: Move linked issue to In Review
+        if: steps.extract-item-id.outputs.id
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+        run: |
+          ITEM_ID=${{ steps.extract-item-id.outputs.id }}
+          STATUS_FIELD_ID="PVTSSF_lAHOASv0is4AbwPczgR4v0Y"
+          IN_REVIEW_OPTION_ID="df73e18b"
+          PROJECT_ID="PVT_kwHOASv0is4AbwPc"
+
+          # Prepare the GraphQL mutation as a single-line JSON string
+          JSON_PAYLOAD="{\"query\":\"mutation { updateProjectV2ItemFieldValue(input: { projectId: \\\"$PROJECT_ID\\\", itemId: \\\"$ITEM_ID\\\", fieldId: \\\"$STATUS_FIELD_ID\\\", value: { singleSelectOptionId: \\\"$IN_REVIEW_OPTION_ID\\\" }}) { projectV2Item { id }}}\"}"
+
+          # Use echo for debugging to verify the JSON payload
+          echo "JSON Payload: $JSON_PAYLOAD"
+
+          # Execute the curl command
+          curl --request POST \
+            --url https://api.github.com/graphql \
+            --header "Authorization: bearer $GITHUB_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "$JSON_PAYLOAD"
