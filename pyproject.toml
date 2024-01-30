@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "drivel-backend"
+name = "drivel-server"
 version = "0.1.0"
 requires-python = ">=3.10"
 
@@ -12,7 +12,7 @@ default = [
     "fastapi"
 ]
 test = [
-    "drivel-backend[default]",
+    "drivel-server[default]",
     "pytest>=7.0",
     "pytest-cov",
     "pytest-mock",
@@ -24,7 +24,7 @@ formatter = [
     "black>=22.3.0",
 ]
 dev = [
-    "drivel-backend[test,lint,formatter]",
+    "drivel-server[test,lint,formatter]",
     "ipython",
     "jupyterlab",
     "pre-commit",
@@ -80,7 +80,7 @@ testpaths = [
 
 [tool.coverage.run]
 source = [
-  "drivel_backend",
+  "drivel_server",
 ]
 omit = [
   "*/__init__.py",
@@ -206,7 +206,7 @@ ignore = [
 
 [tool.ruff.isort]
 force-sort-within-sections = true
-known-first-party = ["drivel_backend"]
+known-first-party = ["drivel_server"]
 
 [tool.ruff.mccabe]
 max-complexity = 6

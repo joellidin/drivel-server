@@ -1,6 +1,6 @@
 """Test dummy."""
 
-from drivel_backend.dummy import add_one
+from drivel_server.dummy import add_one
 
 
 def test_add_one() -> None:
