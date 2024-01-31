@@ -27,4 +27,5 @@ or you can go into the browser with the same address and port.
 #### Documentation
 
 FastAPI automatically generates API documentation with Swagger UI, so you can
-also go to "127.0.0.1:8000/docs" in the browser and run the GET request there.
+also go to [127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) in the browser and run
+the GET request there.
