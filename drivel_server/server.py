@@ -59,6 +59,21 @@ class OpenAIParameters(BaseModel):
     model: MODELS = "gpt-3.5-turbo"
     max_tokens: int = 150
     n: int = 1
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "messages": [
+                        {"content": "You are a helpful assistant.", "role": "system"},
+                        {"content": "What is 1 + 1?", "role": "user"},
+                    ],
+                    "model": "gpt-3.5-turbo",
+                    "max_tokens": 150,
+                    "n": 1,
+                }
+            ]
+        }
+    }
 
 
 @app.get("/")
