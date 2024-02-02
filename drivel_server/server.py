@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException, status
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 from openai.types.chat.chat_completion import Choice
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationInfo, field_validator
 
 MODELS = Literal[
     "gpt-4-0125-preview",
@@ -74,6 +74,25 @@ class OpenAIParameters(BaseModel):
             ]
         }
     }
+
+    @field_validator("messages")
+    @classmethod
+    def check_messages(
+        cls, v: list[ChatCompletionMessageParam], info: ValidationInfo
+    ) -> list[ChatCompletionMessageParam]:
+        """
+        Validate the input messages.
+
+        It checks that messages start with a system message and that the list contains
+        at least one user message.
+        """
+        assert (
+            v[0].get("role") == "system"
+        ), f"{info.field_name} must start with a system message"
+        assert any(
+            message.get("role") == "user" for message in v
+        ), f"{info.field_name} must contain at least one user message"
+        return v
 
 
 @app.get("/")
