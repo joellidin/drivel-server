@@ -59,11 +59,6 @@ exclude = '''
 )
 '''
 
-[tool.jupytext]
-notebook_metadata_filter="all,-widgets,-varInspector,-jupytext.text_representation.jupytext_version,-kernelspec,-vscode"
-cell_metadata_filter="-hide_output"
-formats='notebooks///ipynb,notebooks///py:percent'
-
 # ------------------------------------- Testing ----------------------------------------
 
 [tool.pytest.ini_options]
