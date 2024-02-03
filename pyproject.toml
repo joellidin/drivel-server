@@ -162,8 +162,6 @@ ignore = [
   # ================================ flake8-annotations ================================
   "ANN002",  # Missing type annotation for *args
   "ANN003",  # Missing type annotation for **kwargs
-  "ANN101",  # Missing type annotation for self in method
-  "ANN102",  # Missing type annotation for cls in method
   # ==================================== pydocstyle ====================================
   "D107",    # Missing docstring in __init__
   "D200",    # One-line docstring should fit on one line with quotes
