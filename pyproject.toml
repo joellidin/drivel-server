@@ -23,7 +23,7 @@ lint = [
     "ruff",
 ]
 formatter = [
-    "black>=22.3.0",
+    "ruff",
 ]
 dev = [
     "drivel-server[test,lint,formatter]",
@@ -31,33 +31,6 @@ dev = [
     "jupyterlab",
     "pre-commit",
 ]
-
-# -------------------------------------- Tools -----------------------------------------
-
-[tool.black]
-line-length = 88
-# Uses the minimum supported Python version.
-# Must be kept in sync with the version specified in .env.dev.
-target-version = ["py310"]
-include = '\.pyi?$'
-exclude = '''
-(
-  /(
-      \.eggs
-    | \.git
-    | \.hg
-    | \.ipynb_checkpoints
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-    | .*/proto/.*
-  )/
-)
-'''
 
 # ------------------------------------- Testing ----------------------------------------
 
@@ -174,6 +147,12 @@ ignore = [
   "S101",    # Use of assert detected. The enclosed code will be removed when compiling
              # to optimised byte code.
 ]
+
+[tool.ruff.format]
+docstring-code-format = true      # Enable reformatting of code snippets in docstrings.
+indent-style = "space"            # Use space indentation.
+quote-style = "double"            # Prefer double quotes over single quotes.
+skip-magic-trailing-comma = true  # Ignore magic trailing comma.
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
