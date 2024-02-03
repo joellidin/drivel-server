@@ -140,6 +140,7 @@ select = [
   "E",    # pycodestyle
   "ERA",  # eradicate
   "F",    # Pyflakes
+  "G",    # flake8-logging-format
   "I",    # isort
   "N",    # pep8-naming
   "PD",   # pandas-vet
@@ -154,6 +155,7 @@ select = [
   "S",    # flake8-bandit
   "SIM",  # flake8-simplify
   "T20",  # flake8-print
+  "TCH",  # flake8-type-checking
   "TID",  # flake8-tidy-imports
   "W",    # pycodestyle
 ]
