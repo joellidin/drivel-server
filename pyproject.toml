@@ -110,7 +110,25 @@ exclude_lines = [
 [tool.ruff]
 line-length = 88
 target-version = "py310"
+exclude = [
+  ".eggs",
+  ".git",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".ruff_cache",
+  ".tox",
+  ".venv",
+  "*.egg",
+  "*.pxd",
+  "*.pyx",
+  "__pycache__",
+  "__pypackages__",
+  "_build",
+  "build",
+  "dist",
+]
 
+[tool.ruff.lint]
 select = [
   "ANN",  # flake8-annotations
   "ARG",  # flake8-unused-arguments
@@ -140,25 +158,6 @@ select = [
   "W",    # pycodestyle
 ]
 
-exclude = [
-  ".eggs",
-  ".git",
-  ".ipynb_checkpoints",
-  ".mypy_cache",
-  ".ruff_cache",
-  ".tox",
-  ".venv",
-  "*.egg",
-  "*.pxd",
-  "*.pyx",
-  "__pycache__",
-  "__pypackages__",
-  "_build",
-  "build",
-  "dist",
-  "**/proto/"
-]
-
 ignore = [
   # ================================ flake8-annotations ================================
   "ANN002",  # Missing type annotation for *args
@@ -176,7 +175,7 @@ ignore = [
              # to optimised byte code.
 ]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "__init__.py" = [
   "F401",    # Module imported but unused
 ]
@@ -201,12 +200,13 @@ ignore = [
   "PLR2004", # Magic value used in comparison
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-sort-within-sections = true
 known-first-party = ["drivel_server"]
+split-on-trailing-comma = false
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 6
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
