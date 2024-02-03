@@ -8,7 +8,7 @@ on:
 
 jobs:
   code-fmt:
-    name: black
+    name: ruff-fmt
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the commit that triggered the workflow
@@ -28,5 +28,5 @@ jobs:
       - name: Install code formatting dependencies
         run: pip install -e ".[formatter]"
 
-      - name: Run black formatting check
-        run: black . --check --diff
+      - name: Run ruff formatting check
+        run: ruff format --check
