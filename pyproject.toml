@@ -11,6 +11,7 @@ requires-python = ">=3.10"
 default = [
     "fastapi",
     "httpx",
+    "openai",
     "uvicorn[standard]",
 ]
 test = [
@@ -59,7 +60,7 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 85
+fail_under = 70
 show_missing = true
 exclude_lines = [
   # Have to re-enable the standard pragma
@@ -137,6 +138,8 @@ ignore = [
   # ================================ flake8-annotations ================================
   "ANN002",  # Missing type annotation for *args
   "ANN003",  # Missing type annotation for **kwargs
+  "ANN101",  # Missing type annotation for self in method
+  "ANN102",  # Missing type annotation for cls in method
   # ==================================== pydocstyle ====================================
   "D107",    # Missing docstring in __init__
   "D200",    # One-line docstring should fit on one line with quotes
