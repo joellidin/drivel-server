@@ -1,12 +1,15 @@
 """Server module."""
 
-from typing import Literal
+import io
+from typing import Literal, Type, TypeVar
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, File, HTTPException, UploadFile, status
+from google.cloud import speech
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 from openai.types.chat.chat_completion import Choice
 from pydantic import BaseModel, ValidationInfo, field_validator
+from pydub import AudioSegment
 
 MODELS = Literal[
     "gpt-4-0125-preview",
@@ -26,6 +29,8 @@ MODELS = Literal[
     "gpt-3.5-turbo-1106",
     "gpt-3.5-turbo-16k-0613",
 ]
+
+T = TypeVar("T", bound="SpeechRecognitionResponse")
 
 app = FastAPI()
 
@@ -95,6 +100,66 @@ class OpenAIParameters(BaseModel):
         return v
 
 
+class TranscriptionResult(BaseModel):
+    """Representation of a single transcription result from the speech recognition.
+
+    ### Fields:
+        - **transcription**: The transcribed text.
+
+        - **result_end_time**: The time, in seconds, at which the transcription
+          result ends in the audio.
+
+        - **language_code**: The language code of the transcribed text.
+    """
+
+    transcription: str
+    result_end_time: float
+    language_code: str
+
+
+class SpeechRecognitionResponse(BaseModel):
+    """Representation of the overall response from the speech recognition.
+
+    ### Fields:
+    - **transcriptions**: A list of transcription results.
+
+    - **total_billed_time**: The total time billed by the speech recognition
+        service, in seconds.
+
+    - **request_id**: A unique identifier for the recognition request.
+
+    Methods:
+    - **from_google_response**: Class method to create an instance from a
+        Google Cloud Speech-to-Text response.
+    """
+
+    transcriptions: list[TranscriptionResult]
+    total_billed_time: int
+    request_id: int
+
+    @classmethod
+    def from_google_response(cls: Type[T], response: speech.RecognizeResponse) -> T:
+        """Constructs an instance of the class from a Google STT API response.
+
+        This method parses the Google Speech-to-Text API's RecognizeResponse to
+        extract the fields.
+        """
+        items = [
+            TranscriptionResult(
+                transcription=alternative.transcript,
+                result_end_time=result.result_end_time.total_seconds(),
+                language_code=result.language_code,
+            )
+            for result in response.results
+            for alternative in result.alternatives
+        ]
+        return cls(
+            transcriptions=items,
+            total_billed_time=response.total_billed_time.seconds,
+            request_id=response.request_id,
+        )
+
+
 @app.get("/")
 def root() -> dict[str, str]:
     """Root endpoint."""
@@ -130,6 +195,44 @@ async def generate_response(params: OpenAIParameters) -> list[Choice]:
         return chat_completion.choices
     except Exception as e:
         # Handle errors and exceptions
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
+
+
+@app.post("/perform-stt/", response_model=SpeechRecognitionResponse)
+async def perform_stt(raw_audio: UploadFile = File(...)) -> SpeechRecognitionResponse:  # noqa: B008
+    """Process an audio file and return its speech-to-text transcription.
+
+    This function takes an uploaded audio file of m4a format, converts it to
+    wav, sends it for transcription, and then formats the response into a
+    structured format.
+    """
+    try:
+        # preprocess, assuming the input audio has m4a format
+        audio_bytes_m4a = await raw_audio.read()
+        audio_segment = AudioSegment.from_file(
+            io.BytesIO(audio_bytes_m4a), format="m4a"
+        )
+        buffer = io.BytesIO()
+        audio_segment.export(buffer, format="wav")
+        buffer.seek(0)
+        audio_bytes_wav = buffer.getvalue()
+        audio = speech.RecognitionAudio(content=audio_bytes_wav)
+
+        # prepare the STT client and config
+        client = speech.SpeechClient()
+        config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            sample_rate_hertz=48000,
+            language_code="es-ES",
+            enable_automatic_punctuation=True,
+        )
+
+        # detect speech in the audio file
+        response = client.recognize(config=config, audio=audio)
+        return SpeechRecognitionResponse.from_google_response(response)
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         ) from e
