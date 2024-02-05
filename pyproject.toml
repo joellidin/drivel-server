@@ -141,6 +141,7 @@ ignore = [
   "ANN101",  # Missing type annotation for self in method
   "ANN102",  # Missing type annotation for cls in method
   # ==================================== pydocstyle ====================================
+  "D101",    # Missing docstring in public class
   "D107",    # Missing docstring in __init__
   "D200",    # One-line docstring should fit on one line with quotes
   "D212",    # Multi-line docstring summary should start at the first line
@@ -166,7 +167,6 @@ skip-magic-trailing-comma = true  # Ignore magic trailing comma.
 ]
 "notebooks/*" = [
   "D100",    # Missing docstring in public module
-  "D101",    # Missing docstring in public class
   "D102",    # Missing docstring in public method
   "D103",    # Missing docstring in public function
   "E402",    # Module level import not at top of file
@@ -176,7 +176,6 @@ skip-magic-trailing-comma = true  # Ignore magic trailing comma.
 ]
 "tests/*" = [
   "D100",    # Missing docstring in public module
-  "D101",    # Missing docstring in public class
   "D102",    # Missing docstring in public method
   "D103",    # Missing docstring in public function
   "PLR2004", # Magic value used in comparison
