@@ -10,8 +10,11 @@ requires-python = ">=3.10"
 [project.optional-dependencies]
 default = [
     "fastapi",
+    "google-cloud-speech",
     "httpx",
     "openai",
+    "pydub",
+    "python-multipart",
     "uvicorn[standard]",
 ]
 test = [
