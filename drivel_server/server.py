@@ -4,6 +4,7 @@ import io
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException, UploadFile, status
+from fastapi.responses import Response
 from openai import AsyncOpenAI
 from openai.types.audio import Transcription
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
@@ -157,4 +158,25 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
         # Handle errors and exceptions
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
+
+
+class TTSParameters(BaseModel):
+    """Parameters to the text-to-speech endpoint."""
+
+    text: str
+
+
+@app.post("/text-to-speech/", response_model=None)
+async def text_to_speech(text: TTSParameters) -> Response:  # noqa: B008
+    """Process a text message and return its text-to-speech result."""
+    try:
+        client = AsyncOpenAI()
+        response = await client.audio.speech.create(
+            model="tts-1-hd", voice="nova", input=text.text
+        )
+        return Response(content=response.content, media_type="audio/mp3")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e.with_traceback
         ) from e
