@@ -1,9 +1,11 @@
 """Server module."""
 
+import io
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, UploadFile, status
 from openai import AsyncOpenAI
+from openai.types.audio import Transcription
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 from openai.types.chat.chat_completion import Choice
 from pydantic import BaseModel, ValidationInfo, field_validator
@@ -128,6 +130,29 @@ async def generate_response(params: OpenAIParameters) -> list[Choice]:
         assert isinstance(chat_completion, ChatCompletion)
         # Return the text part of the OpenAI API response
         return chat_completion.choices
+    except Exception as e:
+        # Handle errors and exceptions
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
+
+
+@app.post("/speech-to-text/", response_model=Transcription)
+async def speech_to_text(audio_file: UploadFile) -> Transcription:
+    """
+    Process an audio file and return its speech-to-text transcription.
+
+    This function takes an uploaded audio file sends it to the OpenAI Whisper
+    and returns the transcription object.
+    """
+    try:
+        client = AsyncOpenAI()
+        audio = await audio_file.read()
+        buffer = io.BytesIO(audio)
+        buffer.name = audio_file.filename
+        return await client.audio.transcriptions.create(
+            file=buffer, model="whisper-1", language="es"
+        )
     except Exception as e:
         # Handle errors and exceptions
         raise HTTPException(
