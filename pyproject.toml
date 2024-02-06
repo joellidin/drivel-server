@@ -12,6 +12,7 @@ default = [
     "fastapi",
     "httpx",
     "openai",
+    "python-multipart",
     "uvicorn[standard]",
 ]
 test = [
