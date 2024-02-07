@@ -31,6 +31,9 @@ MODELS = Literal[
 
 app = FastAPI()
 
+with open("/run/secrets/openai-key", "r") as f:
+    OPENAI_API_KEY = f.read().strip()
+
 
 class OpenAIParameters(BaseModel):
     """
@@ -122,7 +125,7 @@ async def generate_response(params: OpenAIParameters) -> list[Choice]:
     `OpenAIParameters` model.
     """
     try:
-        client = AsyncOpenAI()
+        client = AsyncOpenAI(api_key=OPENAI_API_KEY)
         # Call the OpenAI API with the messages
         chat_completion = await client.chat.completions.create(
             **params.model_dump(exclude_none=True)
@@ -146,7 +149,7 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
     and returns the transcription object.
     """
     try:
-        client = AsyncOpenAI()
+        client = AsyncOpenAI(api_key=OPENAI_API_KEY)
         audio = await audio_file.read()
         buffer = io.BytesIO(audio)
         buffer.name = audio_file.filename
