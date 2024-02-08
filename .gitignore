@@ -162,3 +162,4 @@ cython_debug/
 
 # secrets
 openai-key.txt
+google-service-account-key.json
