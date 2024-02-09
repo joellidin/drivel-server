@@ -1,0 +1,38 @@
+from fastapi import APIRouter, HTTPException, status
+from fastapi.responses import Response
+from google.cloud import texttospeech as tts
+
+from drivel_server.core.config import settings
+from drivel_server.schemas.tts import TTSParameters
+
+router = APIRouter()
+
+
+@router.post("/text_to_speech/", response_model=None)
+async def text_to_speech(params: TTSParameters) -> Response:
+    """Process a text message and return its text-to-speech result."""
+    try:
+        async with tts.TextToSpeechAsyncClient.from_service_account_file(
+            filename=settings.SERVICE_ACCOUNT_KEY_FILE
+        ) as client:
+            # Set the text input to be synthesized
+            synthesis_input = tts.SynthesisInput(text=params.text)
+
+            # Build the voice request, select the language code and voice
+            voice = tts.VoiceSelectionParams(
+                language_code=params.language_code, name=params.name
+            )
+
+            # Select the type of audio file you want returned
+            audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3)
+
+            # Perform the text-to-speech request on the text input with the selected
+            # voice parameters and audio file type
+            response = await client.synthesize_speech(
+                input=synthesis_input, voice=voice, audio_config=audio_config
+            )
+            return Response(content=response.audio_content, media_type="audio/mp3")
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e

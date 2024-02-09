@@ -6,7 +6,7 @@ from openai.types.chat import (
 from pydantic import ValidationError
 import pytest
 
-from drivel_server.server import OpenAIParameters
+from drivel_server.schemas.chatgpt import OpenAIParameters
 
 
 # Test for valid input
