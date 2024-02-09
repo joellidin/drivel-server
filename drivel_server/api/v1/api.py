@@ -13,6 +13,6 @@ def root() -> dict[str, str]:
 
 api_router = APIRouter()
 api_router.include_router(router, prefix="", tags=["root"])
-api_router.include_router(tts.router, prefix="", tags=["tts"])
-api_router.include_router(stt.router, prefix="", tags=["stt"])
-api_router.include_router(chatgpt.router, prefix="", tags=["chatgpt"])
+api_router.include_router(tts.router, prefix="/text-to-speech", tags=["tts"])
+api_router.include_router(stt.router, prefix="/speech-to-text", tags=["stt"])
+api_router.include_router(chatgpt.router, prefix="/chat-responses", tags=["chatgpt"])

@@ -10,7 +10,7 @@ from drivel_server.core.security import get_openai_api_key
 router = APIRouter()
 
 
-@router.post("/speech-to-text/", response_model=Transcription)
+@router.post("/", response_model=Transcription)
 async def speech_to_text(audio_file: UploadFile) -> Transcription:
     """
     Process an audio file and return its speech-to-text transcription.

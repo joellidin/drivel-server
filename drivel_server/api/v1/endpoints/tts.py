@@ -8,7 +8,7 @@ from drivel_server.schemas.tts import TTSParameters
 router = APIRouter()
 
 
-@router.post("/text_to_speech/", response_model=None)
+@router.post("/", response_model=None)
 async def text_to_speech(params: TTSParameters) -> Response:
     """Process a text message and return its text-to-speech result."""
     try:
