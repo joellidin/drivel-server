@@ -9,8 +9,8 @@ from drivel_server.schemas.chatgpt import OpenAIParameters
 router = APIRouter()
 
 
-@router.post("/generate_response/", response_model=list[Choice])
-async def generate_response(params: OpenAIParameters) -> list[Choice]:
+@router.post("/chat-responses/", response_model=list[Choice])
+async def chat_responses(params: OpenAIParameters) -> list[Choice]:
     """
     Forwards the conversation to the OpenAI API and retrieves a generated response.
 
