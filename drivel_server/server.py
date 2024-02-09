@@ -2,14 +2,16 @@
 
 import io
 import os
-from typing import Literal
+from typing import Literal, Self
 
 from fastapi import FastAPI, HTTPException, UploadFile, status
+from fastapi.responses import Response
+from google.cloud import texttospeech as tts
 from openai import AsyncOpenAI
 from openai.types.audio import Transcription
 from openai.types.chat import ChatCompletion, ChatCompletionMessageParam
 from openai.types.chat.chat_completion import Choice
-from pydantic import BaseModel, ValidationInfo, field_validator
+from pydantic import BaseModel, ValidationInfo, field_validator, model_validator
 
 MODELS = Literal[
     "gpt-4-0125-preview",
@@ -170,6 +172,73 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
         )
     except Exception as e:
         # Handle errors and exceptions
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
+        ) from e
+
+
+class TTSParameters(BaseModel):
+    """
+    Represents the parameters for configuring a Text-to-Speech (TTS) request.
+
+    ### Fields:
+    - **text**: The input text string to be converted into speech. This field
+        is required and must be provided by the user.
+
+    - **language_code**: Specifies the BCP-47 language code that indicates the
+        language of the input text and the accent of the synthesized speech.
+
+    - **name**: The name of the voice model to be used for the TTS conversion.
+        This field allows for customization of the voice model.
+    """
+
+    text: str
+    language_code: str = "es-ES"
+    name: str = "es-ES-Standard-B"
+
+    @model_validator(mode="after")
+    def check_voice_name(self) -> Self:
+        """
+        Validate the TTS voice name.
+
+        It checks that messages start with a system message and that the list contains
+        at least one user message.
+        """
+        assert self.name.startswith(self.language_code), (
+            f"name '{self.name}' does not start with language_code"
+            f" '{self.language_code}'"
+        )
+        return self
+
+
+SERVICE_ACCOUNT_KEY_FILE = "/run/secrets/google-service-account-key"
+
+
+@app.post("/text-to-speech/", response_model=None)
+async def text_to_speech(params: TTSParameters) -> Response:
+    """Process a text message and return its text-to-speech result."""
+    try:
+        async with tts.TextToSpeechAsyncClient.from_service_account_file(
+            filename=SERVICE_ACCOUNT_KEY_FILE
+        ) as client:
+            # Set the text input to be synthesized
+            synthesis_input = tts.SynthesisInput(text=params.text)
+
+            # Build the voice request, select the language code and voice
+            voice = tts.VoiceSelectionParams(
+                language_code=params.language_code, name=params.name
+            )
+
+            # Select the type of audio file you want returned
+            audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3)
+
+            # Perform the text-to-speech request on the text input with the selected
+            # voice parameters and audio file type
+            response = await client.synthesize_speech(
+                input=synthesis_input, voice=voice, audio_config=audio_config
+            )
+            return Response(content=response.audio_content, media_type="audio/mp3")
+    except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
         ) from e
