@@ -1,3 +1,4 @@
+"""Schemas used by the text-to-speech endpoint."""
 from typing import Self
 
 from pydantic import BaseModel, model_validator

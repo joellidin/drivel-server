@@ -1,3 +1,4 @@
+"""Endpoint and business logic related to speech-to-text."""
 import io
 
 from fastapi import APIRouter, HTTPException, UploadFile, status

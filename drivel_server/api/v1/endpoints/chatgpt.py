@@ -1,3 +1,4 @@
+"""Endpoint and business logic related to ChatGPT."""
 from fastapi import APIRouter, HTTPException, status
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion

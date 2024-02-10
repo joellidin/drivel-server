@@ -1,3 +1,4 @@
+"""Home of all literals used in the project."""
 from typing import Literal
 
 GPT_MODELS = Literal[

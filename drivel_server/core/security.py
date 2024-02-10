@@ -1,3 +1,4 @@
+"""Security related things, such as secrets."""
 import os
 
 from drivel_server.core.config import settings

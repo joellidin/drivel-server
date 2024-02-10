@@ -1,3 +1,4 @@
+"""Collection of all routers in v1."""
 from fastapi import APIRouter
 
 from drivel_server.api.v1.endpoints import chatgpt, stt, tts

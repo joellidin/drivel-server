@@ -1,3 +1,4 @@
+"""Entrypoint."""
 from fastapi import FastAPI
 
 from drivel_server.api.v1.api import api_router
