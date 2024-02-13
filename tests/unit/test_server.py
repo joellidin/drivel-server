@@ -2,11 +2,12 @@
 
 from fastapi.testclient import TestClient
 
-from drivel_server.server import app
+from drivel_server.core.config import settings
+from drivel_server.main import app
 
 
 def test_hello_world() -> None:
     with TestClient(app) as client:
-        response = client.get("/")
+        response = client.get(settings.API_V1_STR)
         assert response.status_code == 200
         assert response.json() == {"Hello": "World"}
