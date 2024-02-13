@@ -146,6 +146,7 @@ ignore = [
   "ANN101",  # Missing type annotation for self in method
   "ANN102",  # Missing type annotation for cls in method
   # ==================================== pydocstyle ====================================
+  "D104",    # Missing docstring in public package
   "D107",    # Missing docstring in __init__
   "D200",    # One-line docstring should fit on one line with quotes
   "D212",    # Multi-line docstring summary should start at the first line
