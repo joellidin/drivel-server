@@ -9,7 +9,7 @@
    export DOCKER_DEFAULT_PLATFORM=linux/amd64
    ```
 
-2. Install the gcloud CLI.
+2. Install the [gcloud CLI](https://cloud.google.com/sdk/docs/install).
 
 3. Authenticate to google cloud:
    
