@@ -11,6 +11,7 @@ requires-python = ">=3.11"
 default = [
     "fastapi",
     "google-auth",
+    "google-cloud-secret-manager",
     "google-cloud-texttospeech",
     "httpx",
     "openai",

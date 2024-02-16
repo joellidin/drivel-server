@@ -29,7 +29,7 @@ async def chat_responses(params: OpenAIParameters) -> list[Choice]:
     `OpenAIParameters` model.
     """
     try:
-        openai_api_key = get_openai_api_key()
+        openai_api_key = await get_openai_api_key()
         client = AsyncOpenAI(api_key=openai_api_key)
         # Call the OpenAI API with the messages
         chat_completion = await client.chat.completions.create(

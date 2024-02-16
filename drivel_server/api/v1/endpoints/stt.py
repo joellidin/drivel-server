@@ -20,7 +20,7 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
     and returns the transcription object.
     """
     try:
-        openai_api_key = get_openai_api_key()
+        openai_api_key = await get_openai_api_key()
         client = AsyncOpenAI(api_key=openai_api_key)
         audio = await audio_file.read()
         buffer = io.BytesIO(audio)
