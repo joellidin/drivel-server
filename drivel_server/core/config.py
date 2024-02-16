@@ -30,15 +30,14 @@ class Settings(BaseSettings):
     Configuration settings for the application.
 
     This class specifies various settings for the application, such as API
-    paths, project name, paths to service account keys, and the speech-to-text
-    model to use. It uses pydantic's BaseSettings for easy, environment-based
-    configuration and validation, aiming to streamline application setup and
-    ensure secure handling of sensitive parameters.
+    paths, project name and the speech-to-text model to use. It uses pydantic's
+    BaseSettings for easy, environment-based configuration and validation,
+    aiming to streamline application setup and ensure secure handling of
+    sensitive parameters.
     """
 
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "drivel-server"
-    SERVICE_ACCOUNT_KEY_FILE: str = "/run/secrets/google-service-account-key.json"
     OPENAI_API_KEY_FILE: str = "/run/secrets/openai-key.txt"
 
     GPT_MODEL: GPT_MODELS = "gpt-3.5-turbo"
