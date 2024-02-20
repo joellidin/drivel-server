@@ -26,7 +26,7 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
         buffer = io.BytesIO(audio)
         buffer.name = audio_file.filename
         return await client.audio.transcriptions.create(
-            file=buffer, model=settings.STT_MODEL, language="es"
+            file=buffer, model=settings.stt_model, language="es"
         )
     except Exception as e:
         # Handle errors and exceptions
