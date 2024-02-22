@@ -20,13 +20,13 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
     and returns the transcription object.
     """
     try:
-        openai_api_key = get_openai_api_key()
+        openai_api_key = await get_openai_api_key()
         client = AsyncOpenAI(api_key=openai_api_key)
         audio = await audio_file.read()
         buffer = io.BytesIO(audio)
         buffer.name = audio_file.filename
         return await client.audio.transcriptions.create(
-            file=buffer, model=settings.STT_MODEL, language="es"
+            file=buffer, model=settings.stt_model, language="es"
         )
     except Exception as e:
         # Handle errors and exceptions

@@ -3,7 +3,6 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response
 from google.cloud import texttospeech as tts
 
-from drivel_server.core.config import settings
 from drivel_server.schemas.tts import TTSParameters
 
 router = APIRouter()
@@ -13,9 +12,7 @@ router = APIRouter()
 async def text_to_speech(params: TTSParameters) -> Response:
     """Process a text message and return its text-to-speech result."""
     try:
-        async with tts.TextToSpeechAsyncClient.from_service_account_file(
-            filename=settings.SERVICE_ACCOUNT_KEY_FILE
-        ) as client:
+        async with tts.TextToSpeechAsyncClient() as client:
             # Set the text input to be synthesized
             synthesis_input = tts.SynthesisInput(text=params.text)
 

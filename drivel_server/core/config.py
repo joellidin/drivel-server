@@ -20,7 +20,10 @@ Example:
     ```
 """
 
-from pydantic_settings import BaseSettings
+from typing import Final, Literal
+
+from pydantic import computed_field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from drivel_server.core.literals import GPT_MODELS
 
@@ -30,19 +33,39 @@ class Settings(BaseSettings):
     Configuration settings for the application.
 
     This class specifies various settings for the application, such as API
-    paths, project name, paths to service account keys, and the speech-to-text
-    model to use. It uses pydantic's BaseSettings for easy, environment-based
-    configuration and validation, aiming to streamline application setup and
-    ensure secure handling of sensitive parameters.
+    paths, project name and the speech-to-text model to use. It uses pydantic's
+    BaseSettings for easy, environment-based configuration and validation,
+    aiming to streamline application setup and ensure secure handling of
+    sensitive parameters.
+
+    Fields without defaults need to be present in `.env` or defined as
+    environment variables, otherwise a pydantic ValidationError will be raised.
     """
 
-    API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "drivel-server"
-    SERVICE_ACCOUNT_KEY_FILE: str = "/run/secrets/google-service-account-key.json"
-    OPENAI_API_KEY_FILE: str = "/run/secrets/openai-key.txt"
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+    )
 
-    GPT_MODEL: GPT_MODELS = "gpt-3.5-turbo"
-    STT_MODEL: str = "whisper-1"
+    gcp_project_number: str
+    gcp_secret_name_openai_key: str
+    secrets_folder: str
+
+    # The environment variable `ENV` is set to prod in the deploy script. In
+    # development, the env variable is not set. Instead, the devault value
+    # below is used.
+    env: Literal["dev", "prod"] = "dev"
+
+    API_V1_STR: Final[str] = "/api/v1"
+    project_name: str = "drivel-server"
+
+    gpt_model: GPT_MODELS = "gpt-3.5-turbo"
+    stt_model: str = "whisper-1"
+
+    @computed_field
+    @property
+    def openai_api_key_file(self) -> str:
+        """Construct path to OpenAI API key file."""
+        return f"{self.secrets_folder}/{self.gcp_secret_name_openai_key}"
 
 
 settings = Settings()

@@ -32,7 +32,7 @@ class OpenAIParameters(BaseModel):
     """
 
     messages: list[ChatCompletionMessageParam]
-    model: GPT_MODELS = settings.GPT_MODEL
+    model: GPT_MODELS = settings.gpt_model
     max_tokens: int = 150
     n: int = 1
     model_config = {
