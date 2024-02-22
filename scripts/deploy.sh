@@ -7,7 +7,7 @@ set -e
 source .env
 
 # Define variables for reuse
-IMAGE_NAME="drivel-server-server"
+IMAGE_NAME="drivel-server-backend"
 TAG="latest"
 GCP_PROJECT_ID="reflog-414215"
 GCR_REGION="europe-north1"
