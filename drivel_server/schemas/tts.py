@@ -1,7 +1,8 @@
 """Schemas used by the text-to-speech endpoint."""
+import re
 from typing import Self
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, field_validator, model_validator
 
 
 class TTSParameters(BaseModel):
@@ -23,14 +24,28 @@ class TTSParameters(BaseModel):
     language_code: str = "es-ES"
     name: str = "es-ES-Standard-B"
 
-    @model_validator(mode="after")
-    def check_voice_name(self) -> Self:
-        """
-        Validate the TTS voice name.
+    @field_validator("text")
+    @classmethod
+    def text_must_not_be_empty(cls, v: str) -> str:
+        """Validate that 'text' is not empty."""
+        if v == "":
+            raise ValueError("text must not be empty")
+        return v
 
-        It checks that messages start with a system message and that the list contains
-        at least one user message.
-        """
+    @field_validator("language_code")
+    @classmethod
+    def language_code_must_follow_pattern(cls, v: str) -> str:
+        """Validate 'language_code' as 'xx-XX': two lowercase, dash, two uppercase."""
+        if not re.match(r"^[a-z]{2}-[A-Z]{2}$", v):
+            raise ValueError(
+                "language_code must be in the format: two lowercase letters"
+                "dash, two uppercase letters"
+            )
+        return v
+
+    @model_validator(mode="after")
+    def voice_name_must_start_with_language_code(self) -> Self:
+        """Validate that 'voice_name' starts with the language code."""
         assert self.name.startswith(self.language_code), (
             f"name '{self.name}' does not start with language_code"
             f" '{self.language_code}'"
