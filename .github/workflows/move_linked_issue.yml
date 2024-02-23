@@ -15,8 +15,13 @@ jobs:
         id: get-issue-number
         run: |
           PR_BODY=$(jq -r ".pull_request.body" "$GITHUB_EVENT_PATH")
-          ISSUE_NUMBER=$(echo "$PR_BODY" | grep -oPi '(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) #\K\d+')
-          echo "number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          ISSUE_NUMBERS=$(echo "$PR_BODY" | grep -oPi '(close|closes|closed|fix|fixes|fixed|resolve|resolves|resolved) #\K\d+' || echo "")
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No issue number found. Exiting workflow without failing."
+            exit 0
+          else
+            echo "number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          fi
 
       - name: Fetch Issue ID
         id: get-issue-id
