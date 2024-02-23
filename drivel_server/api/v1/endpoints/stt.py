@@ -1,4 +1,5 @@
 """Endpoint and business logic related to speech-to-text."""
+import asyncio
 import io
 
 from fastapi import APIRouter, HTTPException, UploadFile, status
@@ -6,7 +7,7 @@ from openai import AsyncOpenAI
 from openai.types.audio import Transcription
 
 from drivel_server.core.config import settings
-from drivel_server.core.security import get_openai_api_key
+from drivel_server.core.security import get_openai_secret
 
 router = APIRouter()
 
@@ -20,8 +21,10 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
     and returns the transcription object.
     """
     try:
-        openai_api_key = await get_openai_api_key()
-        client = AsyncOpenAI(api_key=openai_api_key)
+        api_key, organization_id = await asyncio.gather(
+            get_openai_secret("api_key"), get_openai_secret("org_id")
+        )
+        client = AsyncOpenAI(api_key=api_key, organization=organization_id)
         audio = await audio_file.read()
         buffer = io.BytesIO(audio)
         buffer.name = audio_file.filename

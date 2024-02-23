@@ -1,10 +1,12 @@
 """Endpoint and business logic related to ChatGPT."""
+import asyncio
+
 from fastapi import APIRouter, HTTPException, status
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletion
 from openai.types.chat.chat_completion import Choice
 
-from drivel_server.core.security import get_openai_api_key
+from drivel_server.core.security import get_openai_secret
 from drivel_server.schemas.chatgpt import OpenAIParameters
 
 router = APIRouter()
@@ -29,8 +31,10 @@ async def chat_responses(params: OpenAIParameters) -> list[Choice]:
     `OpenAIParameters` model.
     """
     try:
-        openai_api_key = await get_openai_api_key()
-        client = AsyncOpenAI(api_key=openai_api_key)
+        api_key, organization_id = await asyncio.gather(
+            get_openai_secret("api_key"), get_openai_secret("org_id")
+        )
+        client = AsyncOpenAI(api_key=api_key, organization=organization_id)
         # Call the OpenAI API with the messages
         chat_completion = await client.chat.completions.create(
             **params.model_dump(exclude_none=True)
