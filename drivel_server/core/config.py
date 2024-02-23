@@ -48,6 +48,7 @@ class Settings(BaseSettings):
 
     gcp_project_number: str
     gcp_secret_name_openai_key: str
+    gcp_secret_name_openai_organization_id: str
     secrets_folder: str
 
     # The environment variable `ENV` is set to prod in the deploy script. In
@@ -65,7 +66,16 @@ class Settings(BaseSettings):
     @property
     def openai_api_key_file(self) -> str:
         """Construct path to OpenAI API key file."""
-        return f"{self.secrets_folder}/{self.gcp_secret_name_openai_key}"
+        return f"{self.secrets_folder}/api-key/{self.gcp_secret_name_openai_key}"
+
+    @computed_field
+    @property
+    def openai_organization_id_file(self) -> str:
+        """Construct path to OpenAI API key file."""
+        return (
+            f"{self.secrets_folder}/org-id/"
+            f"{self.gcp_secret_name_openai_organization_id}"
+        )
 
 
 settings = Settings()
