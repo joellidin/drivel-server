@@ -38,7 +38,7 @@ echo "Image pushed to GCR successfully."
 
 # Step 4: Deploy the Docker image to Google Cloud Run
 echo "Deploying the image to Google Cloud Run..."
-gcloud run deploy ${CLOUD_RUN_SERVICE} --image ${GCR_IMAGE_NAME} --region ${GCR_REGION} --no-allow-unauthenticated --update-secrets=${SECRETS_FOLDER}/${GCP_SECRET_NAME_OPENAI_KEY}=projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_KEY}:${SECRET_VERSION}
+gcloud run deploy ${CLOUD_RUN_SERVICE} --image ${GCR_IMAGE_NAME} --region ${GCR_REGION} --allow-unauthenticated --update-secrets=${SECRETS_FOLDER}/${GCP_SECRET_NAME_OPENAI_KEY}=projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_KEY}:${SECRET_VERSION}
 echo "Deployment to Google Cloud Run successful."
 
 echo "Deployment process completed successfully."
