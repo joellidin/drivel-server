@@ -66,13 +66,16 @@ class Settings(BaseSettings):
     @property
     def openai_api_key_file(self) -> str:
         """Construct path to OpenAI API key file."""
-        return f"{self.secrets_folder}/{self.gcp_secret_name_openai_key}"
+        return f"{self.secrets_folder}/api-key/{self.gcp_secret_name_openai_key}"
 
     @computed_field
     @property
     def openai_organization_id_file(self) -> str:
         """Construct path to OpenAI API key file."""
-        return f"{self.secrets_folder}/{self.gcp_secret_name_openai_organization_id}"
+        return (
+            f"{self.secrets_folder}/org-id/"
+            f"{self.gcp_secret_name_openai_organization_id}"
+        )
 
 
 settings = Settings()
