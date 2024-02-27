@@ -11,6 +11,7 @@ services:
   backend:
     build:
       context: .
+    image: ${IMAGE_NAME:-drivel-server-backend}:${TAG:-latest}
     ports:
       - 8000:8000
     # Mount the local ADC file into the container as a secret for
