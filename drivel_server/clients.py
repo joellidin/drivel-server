@@ -30,9 +30,10 @@ class OpenAIClientSingleton:
         Returns:
             AsyncClient: The singleton instance of the OpenAI client.
         """
-        if cls._instance is None:
-            api_key, org_id = await cls._get_openai_secrets()
-            cls._instance = AsyncClient(api_key=api_key, organization=org_id)
+        async with asyncio.Lock():
+            if cls._instance is None:
+                api_key, org_id = await cls._get_openai_secrets()
+                cls._instance = AsyncClient(api_key=api_key, organization=org_id)
         return cls._instance
 
     @staticmethod
@@ -80,6 +81,7 @@ class GoogleCloudClientSingleton:
             Prints a message indicating whether a new client was created or an existing
             one is reused.
         """
-        if cls._instance is None:
-            cls._instance = tts.TextToSpeechAsyncClient()
+        async with asyncio.Lock():
+            if cls._instance is None:
+                cls._instance = tts.TextToSpeechAsyncClient()
         return cls._instance
