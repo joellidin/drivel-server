@@ -1,4 +1,5 @@
 """Schemas used by the chat-responses endpoint."""
+
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, ValidationInfo, field_validator
 

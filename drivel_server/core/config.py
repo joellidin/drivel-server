@@ -15,6 +15,7 @@ this module throughout the project.
 Example:
     ```python
     from drivel_server.core.config import settings
+
     api_base_url = settings.API_V1_STR
     project_name = settings.PROJECT_NAME
     ```
