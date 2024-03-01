@@ -23,6 +23,10 @@ server_uri          := "https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1"
 chat_system_message := "You are a helpful assistant."
 chat_message        := "What is 1 + 1?"
 stt_audio_path      := "./tests/data/audio/me_gusta_aprender_idiomas.mp3"
+tts_message         := "Hola, que tal?"
+tts_language_code   := "es-ES"
+tts_language_name   := "es-ES-Standard-B"
+tts_output_path     := "tts-output.mp3"
 
 default: get_root
 
@@ -91,3 +95,17 @@ alias bp := build_and_push
       -F 'audio_file=@{{audio_file_path}};type=audio/mpeg' \
     | jq -r ".text"
     echo "\033[1m\033[32mSuccess.\033[0m"
+
+@tts message=tts_message audio_output_path=tts_output_path:
+    echo "\033[1m\033[33mCalling speech-to-text...\033[0m"
+    curl -s -X 'POST' \
+      'https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1/text-to-speech/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{ \
+            "text": "{{message}}", \
+            "language_code": "{{tts_language_code}}", \
+            "name": "{{tts_language_name}}" \
+          }' \
+       --output {{audio_output_path}}
+    echo "\033[1m\033[32mSuccess saved audio file to {{audio_output_path}}.\033[0m"
