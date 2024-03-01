@@ -75,7 +75,7 @@ just deploy
 > the [`justfile`](/justfile).
 
 
-### Accessing the endpoint
+### Accessing the endpoints
 
 The service url is
 
@@ -83,19 +83,16 @@ The service url is
 https://drivel-backend-k3u2qxk4cq-lz.a.run.app
 ```
 
-The service requires Cloud IAM authentication. If you make a request using curl,
-one way to authenticate is to add
+You can test it out with the different `just` recipes:
+
+- `just get_root`: calls the root endpoint
+- `just chat_responses <message>`: calls the chat-responses endpoint
+- `just tts <audio_file_path>`: calls the text-to-speech endpoint
+- `just stt <message> <audio_output_path>`: calls the speech-to-text endpoint
+
+All the arguments above have default values. More information about these
+recipes could be found with
 
 ```bash
--H "Authorization: Bearer $(gcloud auth print-identity-token)"
-```
-
-to the curl command. For example:
-
-```bash
-curl -X GET \
-  'https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1/' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -H "Authorization: Bearer $(gcloud auth print-identity-token)"
+just --list
 ```
