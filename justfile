@@ -20,6 +20,8 @@ GCR_IMAGE_NAME                 := GCR_HOSTNAME / GCP_PROJECT_ID / REPOSITORY_NAM
 
 # api variables
 server_uri          := "https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1"
+chat_system_message := "You are a helpful assistant."
+chat_message        := "What is 1 + 1?"
 
 default: get_root
 
@@ -53,4 +55,28 @@ alias bp := build_and_push
     echo "\033[1m\033[33mCalling root endpoint...\033[0m"
     curl -X GET '{{server_uri}}/' \
         -H 'accept: application/json' -H 'Content-Type: application/json' && echo ""
+    echo "\033[1m\033[32mSuccess.\033[0m"
+
+@chat_response message=chat_message:
+    echo "\033[1m\033[33mCalling chat responses...\033[0m"
+    curl -s -X 'POST' \
+      '{{server_uri}}/chat-responses/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{ \
+            "max_tokens": 150, \
+            "messages": [ \
+              { \
+                "content": "{{chat_system_message}}", \
+                "role": "system" \
+              }, \
+              { \
+                "content": "{{message}}", \
+                "role": "user" \
+              } \
+            ], \
+            "model": "gpt-3.5-turbo", \
+            "n": 1 \
+          }' \
+    | jq -r ".[0].message.content"
     echo "\033[1m\033[32mSuccess.\033[0m"
