@@ -1,4 +1,5 @@
 """Schemas used by the text-to-speech endpoint."""
+
 import re
 from typing import Self
 

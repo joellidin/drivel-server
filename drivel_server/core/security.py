@@ -1,4 +1,5 @@
 """Security related things, such as secrets."""
+
 from typing import Literal
 
 from drivel_server.core.config import settings

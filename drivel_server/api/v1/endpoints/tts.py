@@ -1,4 +1,5 @@
 """Endpoint and business logic related to text-to-speech."""
+
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import Response
 from google.cloud import texttospeech as tts
