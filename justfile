@@ -22,6 +22,7 @@ GCR_IMAGE_NAME                 := GCR_HOSTNAME / GCP_PROJECT_ID / REPOSITORY_NAM
 server_uri          := "https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1"
 chat_system_message := "You are a helpful assistant."
 chat_message        := "What is 1 + 1?"
+stt_audio_path      := "./tests/data/audio/me_gusta_aprender_idiomas.mp3"
 
 default: get_root
 
@@ -79,4 +80,14 @@ alias bp := build_and_push
             "n": 1 \
           }' \
     | jq -r ".[0].message.content"
+    echo "\033[1m\033[32mSuccess.\033[0m"
+
+@stt audio_file_path=stt_audio_path:
+    echo "\033[1m\033[33mCalling speech-to-text for {{audio_file_path}}...\033[0m"
+    curl -s -X 'POST' \
+      '{{server_uri}}/speech-to-text/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: multipart/form-data' \
+      -F 'audio_file=@{{audio_file_path}};type=audio/mpeg' \
+    | jq -r ".text"
     echo "\033[1m\033[32mSuccess.\033[0m"
