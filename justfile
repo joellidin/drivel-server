@@ -18,6 +18,11 @@ SECRET_VERSION                 := env("SECRET_VERSION", "latest")
 # Full image name for GCR
 GCR_IMAGE_NAME                 := GCR_HOSTNAME / GCP_PROJECT_ID / REPOSITORY_NAME / IMAGE_NAME
 
+# api variables
+server_uri          := "https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1"
+
+default: get_root
+
 @build tag=TAG:
     echo "\033[1m\033[33mBuilding Docker image...\033[0m"
     TAG={{tag}} docker compose build --no-cache
@@ -43,3 +48,9 @@ alias bp := build_and_push
         --update-secrets={{GCP_SECRET_OPENAI_KEY_PATH}}={{GCP_SECRET_OPENAI_KEY_LOCATION}}:{{SECRET_VERSION}} \
         --update-secrets={{GCP_SECRET_ORG_ID_PATH}}={{GCP_SECRET_ORG_ID_LOCATION}}:{{SECRET_VERSION}}
     echo "\033[1m\033[32mDeployment to Google Cloud Run successful.\033[0m"
+
+@get_root:
+    echo "\033[1m\033[33mCalling root endpoint...\033[0m"
+    curl -X GET '{{server_uri}}/' \
+        -H 'accept: application/json' -H 'Content-Type: application/json' && echo ""
+    echo "\033[1m\033[32mSuccess.\033[0m"
