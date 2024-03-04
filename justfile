@@ -18,6 +18,18 @@ SECRET_VERSION                 := env("SECRET_VERSION", "latest")
 # Full image name for GCR
 GCR_IMAGE_NAME                 := GCR_HOSTNAME / GCP_PROJECT_ID / REPOSITORY_NAME / IMAGE_NAME
 
+# api variables
+server_uri          := "https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1"
+chat_system_message := "You are a helpful assistant."
+chat_message        := "What is 1 + 1?"
+stt_audio_path      := "./tests/data/audio/me_gusta_aprender_idiomas.mp3"
+tts_message         := "Hola, que tal?"
+tts_language_code   := "es-ES"
+tts_language_name   := "es-ES-Standard-B"
+tts_output_path     := "tts-output.mp3"
+
+default: get_root
+
 @build tag=TAG:
     echo "\033[1m\033[33mBuilding Docker image...\033[0m"
     TAG={{tag}} docker compose build --no-cache
@@ -43,3 +55,57 @@ alias bp := build_and_push
         --update-secrets={{GCP_SECRET_OPENAI_KEY_PATH}}={{GCP_SECRET_OPENAI_KEY_LOCATION}}:{{SECRET_VERSION}} \
         --update-secrets={{GCP_SECRET_ORG_ID_PATH}}={{GCP_SECRET_ORG_ID_LOCATION}}:{{SECRET_VERSION}}
     echo "\033[1m\033[32mDeployment to Google Cloud Run successful.\033[0m"
+
+@get_root:
+    echo "\033[1m\033[33mCalling root endpoint...\033[0m"
+    curl -X GET '{{server_uri}}/' \
+        -H 'accept: application/json' -H 'Content-Type: application/json' && echo ""
+    echo "\033[1m\033[32mSuccess.\033[0m"
+
+@chat_response message=chat_message:
+    echo "\033[1m\033[33mCalling chat responses...\033[0m"
+    curl -s -X 'POST' \
+      '{{server_uri}}/chat-responses/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{ \
+            "max_tokens": 150, \
+            "messages": [ \
+              { \
+                "content": "{{chat_system_message}}", \
+                "role": "system" \
+              }, \
+              { \
+                "content": "{{message}}", \
+                "role": "user" \
+              } \
+            ], \
+            "model": "gpt-3.5-turbo", \
+            "n": 1 \
+          }' \
+    | jq -r ".[0].message.content"
+    echo "\033[1m\033[32mSuccess.\033[0m"
+
+@stt audio_file_path=stt_audio_path:
+    echo "\033[1m\033[33mCalling speech-to-text for {{audio_file_path}}...\033[0m"
+    curl -s -X 'POST' \
+      '{{server_uri}}/speech-to-text/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: multipart/form-data' \
+      -F 'audio_file=@{{audio_file_path}};type=audio/mpeg' \
+    | jq -r ".text"
+    echo "\033[1m\033[32mSuccess.\033[0m"
+
+@tts message=tts_message audio_output_path=tts_output_path:
+    echo "\033[1m\033[33mCalling speech-to-text...\033[0m"
+    curl -s -X 'POST' \
+      'https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1/text-to-speech/' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{ \
+            "text": "{{message}}", \
+            "language_code": "{{tts_language_code}}", \
+            "name": "{{tts_language_name}}" \
+          }' \
+       --output {{audio_output_path}}
+    echo "\033[1m\033[32mSuccess saved audio file to {{audio_output_path}}.\033[0m"
