@@ -99,7 +99,7 @@ alias bp := build_and_push
 @tts message=tts_message audio_output_path=tts_output_path:
     echo "\033[1m\033[33mCalling speech-to-text...\033[0m"
     curl -s -X 'POST' \
-      'https://drivel-backend-k3u2qxk4cq-lz.a.run.app/api/v1/text-to-speech/' \
+      '{{server_uri}}/text-to-speech/' \
       -H 'accept: application/json' \
       -H 'Content-Type: application/json' \
       -d '{ \
