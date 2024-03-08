@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from drivel_server.api.v1.endpoints import chatgpt, stt, tts
+from drivel_server.api.v1.endpoints import chat, stt, tts
 
 router = APIRouter()
 
@@ -17,4 +17,4 @@ api_router = APIRouter()
 api_router.include_router(router, prefix="", tags=["root"])
 api_router.include_router(tts.router, prefix="/text-to-speech", tags=["tts"])
 api_router.include_router(stt.router, prefix="/speech-to-text", tags=["stt"])
-api_router.include_router(chatgpt.router, prefix="/chat-responses", tags=["chatgpt"])
+api_router.include_router(chat.router, prefix="/chat-responses", tags=["chat"])
