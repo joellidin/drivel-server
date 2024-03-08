@@ -1,0 +1,43 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  tests:
+    name: pytest
+    runs-on: ubuntu-latest
+    permissions:
+     contents: 'read'
+     id-token: 'write'
+    steps:
+      - name: Checkout the commit that triggered the workflow
+        uses: actions/checkout@v3.5.3
+
+      - name: Authenticate to google cloud
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: 'reflog-414215'
+          workload_identity_provider: 'projects/1024792190274/locations/global/workloadIdentityPools/github/providers/drivel'
+
+      - name: Load needed env variables
+        id: dotenv
+        uses: falti/dotenv-action@v1.1
+        with:
+          path: ".env.template"
+          log-variables: true
+          export-variables: true
+
+      - name: Setup python
+        uses: actions/setup-python@v4.6.1
+        with:
+          python-version: ${{ steps.dotenv.outputs.python_version }}
+
+      - name: Install testing dependencies
+        run: pip install -e ".[test]"
+
+      - name: Run pytest
+        run: pytest tests
