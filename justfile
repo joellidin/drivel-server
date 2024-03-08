@@ -109,3 +109,12 @@ alias bp := build_and_push
           }' \
        --output {{audio_output_path}}
     echo "\033[1m\033[32mSuccess saved audio file to {{audio_output_path}}.\033[0m"
+
+@unit-test:
+    pytest tests/unit --no-cov
+
+@integration-test:
+    pytest tests/integration --no-cov
+
+@test:
+    pytest

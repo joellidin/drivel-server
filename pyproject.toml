@@ -53,6 +53,7 @@ minversion = "7.0"
 norecursedirs = "__pycache__"
 testpaths = [
   "tests/unit",
+  "tests/integration",
 ]
 
 [tool.coverage.run]
@@ -66,7 +67,7 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 50
+fail_under = 75
 show_missing = true
 exclude_lines = [
   # Have to re-enable the standard pragma
