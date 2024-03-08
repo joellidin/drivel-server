@@ -6,7 +6,7 @@ from drivel_server.core.config import settings
 from drivel_server.main import app
 
 
-def test_hello_world() -> None:
+def test_root() -> None:
     with TestClient(app) as client:
         response = client.get(settings.API_V1_STR)
         assert response.status_code == 200
