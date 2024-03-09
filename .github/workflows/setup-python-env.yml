@@ -1,0 +1,35 @@
+name: Setup Python Environment
+on:
+  workflow_call:
+    inputs:
+      pythonEnvPath:
+        type: string
+        description: "Path to the .env file containing the Python version"
+        required: true
+        default: ".env.dev"
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: test2
+        run: |
+          echo ${{ inputs.pythonEnvPath }}
+
+      - name: Checkout the commit that triggered the workflow
+        uses: actions/checkout@v4
+
+      - name: Load project python version from .env file
+        id: dotenv
+        uses: falti/dotenv-action@v1.1
+        with:
+          path: ${{ inputs.pythonEnvPath }}
+
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ steps.dotenv.outputs.python_version }}
+
+      - name: test
+        run: |
+          echo ${{ steps.dotenv.outputs.python_version }}
