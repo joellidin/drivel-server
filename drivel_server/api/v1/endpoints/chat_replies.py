@@ -5,7 +5,7 @@ from openai.types.chat import ChatCompletion
 from openai.types.chat.chat_completion import Choice
 
 from drivel_server.clients import OpenAIClientSingleton
-from drivel_server.schemas.chat import OpenAIParameters
+from drivel_server.schemas.chat_replies import OpenAIParameters
 
 router = APIRouter()
 
