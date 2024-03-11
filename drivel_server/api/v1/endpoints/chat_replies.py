@@ -1,11 +1,11 @@
-"""Endpoint and business logic related to ChatGPT."""
+"""Endpoint and business logic related to Chat."""
 
 from fastapi import APIRouter, HTTPException, status
 from openai.types.chat import ChatCompletion
 from openai.types.chat.chat_completion import Choice
 
 from drivel_server.clients import OpenAIClientSingleton
-from drivel_server.schemas.chatgpt import OpenAIParameters
+from drivel_server.schemas.chat_replies import OpenAIParameters
 
 router = APIRouter()
 
