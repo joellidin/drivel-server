@@ -27,7 +27,7 @@ jobs:
         id: dotenv
         uses: falti/dotenv-action@v1.1
         with:
-          path: ".env.template"
+          path: ".env.dev"
           log-variables: true
           export-variables: true
 
