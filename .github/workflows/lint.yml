@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  lint:
-    name: ruff
+  ruff-lint:
+    name: ruff-lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the commit that triggered the workflow
