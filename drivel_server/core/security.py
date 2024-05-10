@@ -5,7 +5,7 @@ from typing import Literal
 from drivel_server.core.config import settings
 
 
-async def get_openai_secret(name: Literal["api_key", "org_id"]) -> str:
+async def get_openai_secret(name: Literal["api_key", "org_id", "proj_id"]) -> str:
     """Get the OpenAI secret value.
 
     In a production environment, it is read from a file. In a development
@@ -18,6 +18,9 @@ async def get_openai_secret(name: Literal["api_key", "org_id"]) -> str:
         case "org_id":
             file = settings.openai_organization_id_file
             gcp_secret_name = settings.gcp_secret_name_openai_organization_id
+        case "proj_id":
+            file = settings.openai_project_id_file
+            gcp_secret_name = settings.gcp_secret_name_openai_project_id
 
     match settings.env:
         case "prod":
