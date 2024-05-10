@@ -39,6 +39,10 @@ dev = [
     "ruff-lsp",
 ]
 
+
+[tool.rye]
+dev-dependencies = ["drivel-server[dev]"]
+
 # ------------------------------------- Testing ----------------------------------------
 
 [tool.pytest.ini_options]

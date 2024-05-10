@@ -7,6 +7,8 @@ from openai import AsyncClient
 
 from drivel_server.core.security import get_openai_secret
 
+type OpenAISecrets = tuple[str, str, str]
+
 
 class OpenAIClientSingleton:
     """
@@ -33,12 +35,14 @@ class OpenAIClientSingleton:
         """
         async with asyncio.Lock():
             if cls._instance is None:
-                api_key, org_id = await cls._get_openai_secrets()
-                cls._instance = AsyncClient(api_key=api_key, organization=org_id)
+                api_key, org_id, project_id = await cls._get_openai_secrets()
+                cls._instance = AsyncClient(
+                    api_key=api_key, organization=org_id, project=project_id
+                )
         return cls._instance
 
     @staticmethod
-    async def _get_openai_secrets() -> tuple[str, str]:
+    async def _get_openai_secrets() -> OpenAISecrets:
         """
         Retrieves the OpenAI API key and orgID required for initializing the client.
 
@@ -47,12 +51,14 @@ class OpenAIClientSingleton:
         that accesses some form of secure storage.
 
         Returns:
-            Tuple[str, str]: A tuple containing the OpenAI API key and organization ID.
+            OpenAISecrets: A tuple containing the OpenAI API key, organization ID and
+                project ID.
         """
-        a, b = await asyncio.gather(
-            get_openai_secret("api_key"), get_openai_secret("org_id")
+        return await asyncio.gather(
+            get_openai_secret("api_key"),
+            get_openai_secret("org_id"),
+            get_openai_secret("proj_id"),
         )
-        return a, b
 
 
 class GoogleCloudClientSingleton:
