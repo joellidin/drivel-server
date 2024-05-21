@@ -9,13 +9,14 @@ GCR_REGION                     := env("GCR_REGION", "europe-north1")
 GCR_HOSTNAME                   := env("GCR_HOSTNAME", GCR_REGION + "-docker.pkg.dev")
 GCP_SECRET_OPENAI_KEY_PATH     := "${SECRETS_FOLDER}/api-key/${GCP_SECRET_NAME_OPENAI_KEY}"
 GCP_SECRET_ORG_ID_PATH         := "${SECRETS_FOLDER}/org-id/${GCP_SECRET_NAME_OPENAI_ORGANIZATION_ID}"
-GCP_SECRET_PROJ_ID_PATH         := "${SECRETS_FOLDER}/proj-id/${GCP_SECRET_NAME_OPENAI_PROJECT_ID}"
+GCP_SECRET_PROJ_ID_PATH        := "${SECRETS_FOLDER}/proj-id/${GCP_SECRET_NAME_OPENAI_PROJECT_ID}"
 GCP_SECRET_OPENAI_KEY_LOCATION := "projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_KEY}"
 GCP_SECRET_ORG_ID_LOCATION     := "projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_ORGANIZATION_ID}"
-GCP_SECRET_PROJ_ID_LOCATION     := "projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_PROJECT_ID}"
+GCP_SECRET_PROJ_ID_LOCATION    := "projects/${GCP_PROJECT_NUMBER}/secrets/${GCP_SECRET_NAME_OPENAI_PROJECT_ID}"
 REPOSITORY_NAME                := env("REPOSITORY_NAME", "drivel-backend")
 CLOUD_RUN_SERVICE              := env("CLOUD_RUN_SERVICE", "drivel-backend")
 SECRET_VERSION                 := env("SECRET_VERSION", "latest")
+
 
 # Full image name for GCR
 GCR_IMAGE_NAME                 := GCR_HOSTNAME / GCP_PROJECT_ID / REPOSITORY_NAME / IMAGE_NAME
@@ -51,12 +52,22 @@ default: get_root
 
 alias bp := build_and_push
 
-@deploy tag=TAG: (build_and_push tag)
+deploy tag=TAG: (build_and_push tag)
+    #!/usr/bin/env sh
+
     echo "\033[1m\033[33mDeploying the image to Google Cloud Run...\033[0m"
+
+
+    # Read the .env.yaml file and convert to KEY=value format
+    ENV_VARS=$(yq eval '. | to_entries | map(.key + "=" + .value) | join(",")' .env.yaml)
+
+    # Append ENV=prod to the environment variables
+    ENV_VARS="${ENV_VARS},ENV=prod"
     gcloud run deploy {{CLOUD_RUN_SERVICE}} --image {{GCR_IMAGE_NAME}} --region {{GCR_REGION}} --allow-unauthenticated \
         --update-secrets={{GCP_SECRET_OPENAI_KEY_PATH}}={{GCP_SECRET_OPENAI_KEY_LOCATION}}:{{SECRET_VERSION}} \
         --update-secrets={{GCP_SECRET_ORG_ID_PATH}}={{GCP_SECRET_ORG_ID_LOCATION}}:{{SECRET_VERSION}} \
-        --update-secrets={{GCP_SECRET_PROJ_ID_PATH}}={{GCP_SECRET_PROJ_ID_LOCATION}}:{{SECRET_VERSION}}
+        --update-secrets={{GCP_SECRET_PROJ_ID_PATH}}={{GCP_SECRET_PROJ_ID_LOCATION}}:{{SECRET_VERSION}} \
+        --update-env-vars=$ENV_VARS
     echo "\033[1m\033[32mDeployment to Google Cloud Run successful.\033[0m"
 
 @get_root:
