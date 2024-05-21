@@ -6,9 +6,10 @@
 #   features: ["default"]
 #   all-features: false
 #   with-sources: false
+#   generate-hashes: false
 
 -e file:.
-annotated-types==0.6.0
+annotated-types==0.7.0
     # via pydantic
 anyio==4.3.0
     # via httpx
@@ -77,8 +78,7 @@ executing==2.0.1
     # via stack-data
 fastapi==0.111.0
     # via drivel-server
-    # via fastapi-cli
-fastapi-cli==0.0.3
+fastapi-cli==0.0.4
     # via fastapi
 fastjsonschema==2.19.1
     # via nbformat
@@ -104,7 +104,7 @@ googleapis-common-protos==1.63.0
     # via grpcio-status
 grpc-google-iam-v1==0.13.0
     # via google-cloud-secret-manager
-grpcio==1.63.0
+grpcio==1.64.0
     # via google-api-core
     # via googleapis-common-protos
     # via grpc-google-iam-v1
@@ -216,7 +216,7 @@ nodeenv==1.8.0
     # via pre-commit
 notebook-shim==0.2.4
     # via jupyterlab
-openai==1.28.0
+openai==1.30.1
     # via drivel-server
 orjson==3.10.3
     # via fastapi
@@ -236,12 +236,12 @@ parso==0.8.4
     # via jedi
 pexpect==4.9.0
     # via ipython
-platformdirs==4.2.1
+platformdirs==4.2.2
     # via jupyter-core
     # via virtualenv
 pluggy==1.5.0
     # via pytest
-pre-commit==3.7.0
+pre-commit==3.7.1
     # via drivel-server
 prometheus-client==0.20.0
     # via jupyter-server
@@ -287,7 +287,7 @@ pygments==2.18.0
     # via ipython
     # via nbconvert
     # via rich
-pytest==8.2.0
+pytest==8.2.1
     # via drivel-server
     # via pytest-cov
     # via pytest-mock
@@ -318,7 +318,7 @@ referencing==0.35.1
     # via jsonschema
     # via jsonschema-specifications
     # via jupyter-events
-requests==2.31.0
+requests==2.32.1
     # via google-api-core
     # via jupyterlab-server
 rfc3339-validator==0.1.4
@@ -397,7 +397,7 @@ typing-extensions==4.11.0
     # via pydantic-core
     # via ruff-lsp
     # via typer
-ujson==5.9.0
+ujson==5.10.0
     # via fastapi
 uri-template==1.3.0
     # via jsonschema
@@ -406,10 +406,9 @@ urllib3==2.2.1
 uvicorn==0.29.0
     # via drivel-server
     # via fastapi
-    # via fastapi-cli
 uvloop==0.19.0
     # via uvicorn
-virtualenv==20.26.1
+virtualenv==20.26.2
     # via pre-commit
 watchfiles==0.21.0
     # via uvicorn

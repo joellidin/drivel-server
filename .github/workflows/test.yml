@@ -23,18 +23,15 @@ jobs:
           project_id: 'reflog-414215'
           workload_identity_provider: 'projects/1024792190274/locations/global/workloadIdentityPools/github/providers/drivel'
 
-      - name: Load needed env variables
-        id: dotenv
-        uses: falti/dotenv-action@v1.1
+      - name: Load environment from YAML
+        uses: dcarbone/yaml-to-env-action@v2.1.1
         with:
-          path: ".env.dev"
-          log-variables: true
-          export-variables: true
+          yaml-file: .env-dev.yaml
 
       - name: Setup python
         uses: actions/setup-python@v4.6.1
         with:
-          python-version: ${{ steps.dotenv.outputs.python_version }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install testing dependencies
         run: pip install -e ".[test]"

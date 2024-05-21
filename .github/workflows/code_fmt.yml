@@ -14,16 +14,15 @@ jobs:
       - name: Checkout the commit that triggered the workflow
         uses: actions/checkout@v3.5.3
 
-      - name: Load project python version from .env.dev file
-        id: dotenv
-        uses: falti/dotenv-action@v1.0.2
+      - name: Load environment from YAML
+        uses: dcarbone/yaml-to-env-action@v2.1.1
         with:
-          path: ".env.dev"
+          yaml-file: .env-dev.yaml
 
       - name: Setup python
         uses: actions/setup-python@v4.6.1
         with:
-          python-version: ${{ steps.dotenv.outputs.python_version }}
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install code formatting dependencies
         run: pip install -e ".[formatter]"

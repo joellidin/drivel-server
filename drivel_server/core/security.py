@@ -14,13 +14,13 @@ async def get_openai_secret(name: Literal["api_key", "org_id", "proj_id"]) -> st
     match name:
         case "api_key":
             file = settings.openai_api_key_file
-            gcp_secret_name = settings.gcp_secret_name_openai_key
+            gcp_secret_name = settings.GCP_SECRET_NAME_OPENAI_KEY
         case "org_id":
             file = settings.openai_organization_id_file
-            gcp_secret_name = settings.gcp_secret_name_openai_organization_id
+            gcp_secret_name = settings.GCP_SECRET_NAME_OPENAI_ORGANIZATION_ID
         case "proj_id":
             file = settings.openai_project_id_file
-            gcp_secret_name = settings.gcp_secret_name_openai_project_id
+            gcp_secret_name = settings.GCP_SECRET_NAME_OPENAI_PROJECT_ID
 
     match settings.env:
         case "prod":
@@ -31,6 +31,6 @@ async def get_openai_secret(name: Literal["api_key", "org_id", "proj_id"]) -> st
 
             client = secretmanager.SecretManagerServiceAsyncClient()
             secret = await client.access_secret_version(
-                name=f"projects/{settings.gcp_project_number}/secrets/{gcp_secret_name}/versions/latest"
+                name=f"projects/{settings.GCP_PROJECT_NUMBER}/secrets/{gcp_secret_name}/versions/latest"
             )
             return secret.payload.data.decode()
