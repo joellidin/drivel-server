@@ -121,3 +121,8 @@ alias bp := build_and_push
 
 @test:
     pytest
+
+@generate-dotenv:
+    echo "\033[1m\033[33mGenerating \`\033[0m.env\033[1m\033[33m\` from \
+        \`\033[0m.env.yaml\033[1m\033[33m\`...\033[0m"
+    yq eval '. | to_entries | .[] | "\(.key)=\(.value)"' .env.yaml > .env

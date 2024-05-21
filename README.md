@@ -6,7 +6,11 @@
 
 #### Environment variables
 
-Create a .env file with the help of `.env.dev`.
+Create a `.env.yaml` file with the help of `.env-dev.yaml`. You will also need
+to have [`yq`](https://github.com/mikefarah/yq) to be able to parse the yaml
+file into a `.env` file. To generate the `.env` file you can run `just
+generate-dotenv`. This needs to be rerun as soon as your `.env.yaml` file is
+updated.
 
 #### Google cloud authentication
 
@@ -104,17 +108,18 @@ necessary steps to do:
 
 1. Create the secret in `gcloud`, either through the web ui or by using `gcloud
    secret create`.
-2. Add the secret name as a environment variable in `.env.dev`.
-3. Add the secret name to our pydantic
+2. Add the secret name as an environment variable in `.env-dev.yaml`.
+3. Update your `.env.yaml` file and run `just generate-dotenv`.
+4. Add the secret name to our pydantic
    [`Settings`](https://github.com/joellidin/drivel-server/blob/main/drivel_server/core/config.py).
    It should be the same name as in step 2 but with lower case.
-4. Add the secret to our github iam policy for our CI
+5. Add the secret to our github iam policy for our CI
    ```bash
    gcloud secrets add-iam-policy-binding "<secret-name>"
    --project="reflog-414215" --role="roles/secretmanager.secretAccessor"
    --member="principalSet://iam.googleapis.com/projects/1024792190274/locations/global/workloadIdentityPools/github/attribute.repository/joellidin/drivel-server"
    ```
-5. Add the secret to our deploy recipe. You need to add this flag:
+6. Add the secret to our deploy recipe. You need to add this flag:
    ```bash
    --update-secrets={{GCP_SECRET_NAME}}={{GCP_SECRET_LOCATION}}:{{SECRET_VERSION}}
    ```
