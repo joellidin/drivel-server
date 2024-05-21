@@ -94,7 +94,7 @@ deploy tag=TAG: (build_and_push tag)
                 "role": "user" \
               } \
             ], \
-            "model": "gpt-3.5-turbo", \
+            "model": "gpt-4o", \
             "n": 1 \
           }' \
     | jq -r ".[0].message.content"

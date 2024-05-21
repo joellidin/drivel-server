@@ -23,6 +23,7 @@ Example:
 
 from typing import Final, Literal
 
+from openai.types.chat_model import ChatModel
 from pydantic import computed_field
 from pydantic_settings import (
     BaseSettings,
@@ -30,8 +31,6 @@ from pydantic_settings import (
     SettingsConfigDict,
     YamlConfigSettingsSource,
 )
-
-from drivel_server.core.literals import GPT_MODELS
 
 
 class Settings(BaseSettings):
@@ -64,7 +63,7 @@ class Settings(BaseSettings):
     API_V1_STR: Final[str] = "/api/v1"
     project_name: str = "drivel-server"
 
-    gpt_model: GPT_MODELS = "gpt-3.5-turbo"
+    gpt_model: ChatModel = "gpt-4o"
     stt_model: str = "whisper-1"
 
     @computed_field

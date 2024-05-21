@@ -3,8 +3,8 @@
 from typing import get_args
 
 from fastapi.testclient import TestClient
+from openai import types
 
-from drivel_server.core import literals
 from drivel_server.core.config import settings
 from drivel_server.main import app
 from tests.integration.conftest import ChatInput
@@ -42,7 +42,7 @@ def test_chat_invalid_model(chat_default_input: ChatInput) -> None:
             timeout=10,
         )
         assert response.status_code == 422
-        models = ", ".join(f"'{model}'" for model in get_args(literals.GPT_MODELS))
+        models = ", ".join(f"'{model}'" for model in get_args(types.ChatModel))
         # Replace last comma with 'or'
         error_message = "Input should be " + " or".join(f"{models}".rsplit(",", 1))
         assert response.json()["detail"][0]["msg"] == error_message
