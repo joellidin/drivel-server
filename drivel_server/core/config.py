@@ -24,7 +24,12 @@ Example:
 from typing import Final, Literal
 
 from pydantic import computed_field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings,
+    PydanticBaseSettingsSource,
+    SettingsConfigDict,
+    YamlConfigSettingsSource,
+)
 
 from drivel_server.core.literals import GPT_MODELS
 
@@ -43,15 +48,13 @@ class Settings(BaseSettings):
     environment variables, otherwise a pydantic ValidationError will be raised.
     """
 
-    model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
-    )
+    model_config = SettingsConfigDict(yaml_file=".env.yaml", yaml_file_encoding="utf-8")
 
-    gcp_project_number: str
-    gcp_secret_name_openai_key: str
-    gcp_secret_name_openai_organization_id: str
-    gcp_secret_name_openai_project_id: str
-    secrets_folder: str
+    GCP_PROJECT_NUMBER: str
+    GCP_SECRET_NAME_OPENAI_KEY: str
+    GCP_SECRET_NAME_OPENAI_ORGANIZATION_ID: str
+    GCP_SECRET_NAME_OPENAI_PROJECT_ID: str
+    SECRETS_FOLDER: str
 
     # The environment variable `ENV` is set to prod in the deploy script. In
     # development, the env variable is not set. Instead, the devault value
@@ -68,15 +71,15 @@ class Settings(BaseSettings):
     @property
     def openai_api_key_file(self) -> str:
         """Construct path to OpenAI API key file."""
-        return f"{self.secrets_folder}/api-key/{self.gcp_secret_name_openai_key}"
+        return f"{self.SECRETS_FOLDER}/api-key/{self.GCP_SECRET_NAME_OPENAI_KEY}"
 
     @computed_field
     @property
     def openai_organization_id_file(self) -> str:
         """Construct path to OpenAI organization ID file."""
         return (
-            f"{self.secrets_folder}/org-id/"
-            f"{self.gcp_secret_name_openai_organization_id}"
+            f"{self.SECRETS_FOLDER}/org-id/"
+            f"{self.GCP_SECRET_NAME_OPENAI_ORGANIZATION_ID}"
         )
 
     @computed_field
@@ -84,8 +87,33 @@ class Settings(BaseSettings):
     def openai_project_id_file(self) -> str:
         """Construct path to OpenAI project ID file."""
         return (
-            f"{self.secrets_folder}/proj-id/"
-            f"{self.gcp_secret_name_openai_project_id}"
+            f"{self.SECRETS_FOLDER}/proj-id/"
+            f"{self.GCP_SECRET_NAME_OPENAI_PROJECT_ID}"
+        )
+
+    @classmethod
+    def settings_customise_sources(  # noqa: PLR0913
+        cls,
+        settings_cls: type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> tuple[PydanticBaseSettingsSource, ...]:
+        """
+        Customize the sources of settings for a Pydantic BaseSettings class.
+
+        This class method allows for the customization of the order and types of
+        settings sources used by a Pydantic BaseSettings class. By overriding this
+        method, additional settings sources can be added, or existing ones can be
+        reordered.
+        """
+        return (
+            init_settings,
+            YamlConfigSettingsSource(settings_cls),
+            env_settings,
+            dotenv_settings,
+            file_secret_settings,
         )
 
 
