@@ -1,10 +1,10 @@
 """Schemas used by the chat-responses endpoint."""
 
 from openai.types.chat import ChatCompletionMessageParam
+from openai.types.chat_model import ChatModel
 from pydantic import BaseModel, ValidationInfo, field_validator
 
 from drivel_server.core.config import settings
-from drivel_server.core.literals import GPT_MODELS
 
 
 class OpenAIParameters(BaseModel):
@@ -33,7 +33,7 @@ class OpenAIParameters(BaseModel):
     """
 
     messages: list[ChatCompletionMessageParam]
-    model: GPT_MODELS = settings.gpt_model
+    model: ChatModel = settings.gpt_model
     max_tokens: int = 150
     n: int = 1
     model_config = {
@@ -44,7 +44,7 @@ class OpenAIParameters(BaseModel):
                         {"content": "You are a helpful assistant.", "role": "system"},
                         {"content": "What is 1 + 1?", "role": "user"},
                     ],
-                    "model": "gpt-3.5-turbo",
+                    "model": "gpt-4o",
                     "max_tokens": 150,
                     "n": 1,
                 }

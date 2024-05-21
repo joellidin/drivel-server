@@ -20,7 +20,7 @@ def test_openai_parameters_valid() -> None:
                 {"content": "What's the weather like?", "role": "user"}
             ),
         ],
-        "model": "gpt-3.5-turbo",
+        "model": "gpt-4o",
         "max_tokens": 150,
         "n": 1,
     }
@@ -67,7 +67,7 @@ def test_openai_parameters_default_values() -> None:
         ChatCompletionUserMessageParam({"content": "User's message", "role": "user"}),
     ]
     params = OpenAIParameters(messages=valid_messages)
-    assert params.model == "gpt-3.5-turbo"
+    assert params.model == "gpt-4o"
     assert params.max_tokens == 150
     assert params.n == 1
 
