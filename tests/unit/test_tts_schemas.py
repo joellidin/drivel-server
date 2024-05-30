@@ -48,3 +48,36 @@ def test_voice_name_must_start_with_language_code_invalid() -> None:
     with pytest.raises(ValidationError) as exc_info:
         TTSParameters(text="Hello", language_code="en-US", name="fr-FR-Standard-A")
     assert "does not start with language_code" in str(exc_info.value)
+
+
+def test_speaking_rate_valid_default() -> None:
+    """Default `speaking_rate` should be valid."""
+    params = TTSParameters(text="Un texto cualquiera")
+    assert params.speaking_rate == 1
+
+
+def test_speaking_rate_valid_custom() -> None:
+    """Valid custom `speaking_rate` should not raise ValidationError."""
+    params = TTSParameters(
+        text="Hello", language_code="en-US", name="en-US-Standard-A", speaking_rate=2.5
+    )
+    assert params.speaking_rate == 2.5
+
+
+@pytest.mark.parametrize(
+    "speaking_rate",
+    [
+        (0.24),  # Below the valid range
+        (4.01),  # Above the valid range
+    ],
+)
+def test_speaking_rate_invalid(speaking_rate: float) -> None:
+    """speaking_rate outside the range 0.25 to 4 should raise ValidationError."""
+    with pytest.raises(ValidationError) as exc_info:
+        TTSParameters(
+            text="Hello",
+            language_code="en-US",
+            name="en-US-Standard-A",
+            speaking_rate=speaking_rate,
+        )
+    assert "speaking_rate must be between 0.25 and 4" in str(exc_info.value)
