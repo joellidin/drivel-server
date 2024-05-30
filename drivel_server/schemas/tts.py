@@ -5,6 +5,8 @@ from typing import Self
 
 from pydantic import BaseModel, field_validator, model_validator
 
+from drivel_server.core.config import settings
+
 
 class TTSParameters(BaseModel):
     """
@@ -24,6 +26,7 @@ class TTSParameters(BaseModel):
     text: str
     language_code: str = "es-ES"
     name: str = "es-ES-Standard-B"
+    speaking_rate: float = 1.0
 
     @field_validator("text")
     @classmethod
@@ -42,6 +45,18 @@ class TTSParameters(BaseModel):
                 "language_code must be in the format: two lowercase letters"
                 "dash, two uppercase letters"
             )
+        return v
+
+    @field_validator("speaking_rate")
+    @classmethod
+    def speaking_rate_must_be_in_range(cls, v: float) -> float:
+        """Validate that 'speaking_rate' is between 0.25 and 4."""
+        if not (
+            settings.stt_speech_rate_interval[0]
+            <= v
+            <= settings.stt_speech_rate_interval[1]
+        ):
+            raise ValueError("speaking_rate must be between 0.25 and 4")
         return v
 
     @model_validator(mode="after")

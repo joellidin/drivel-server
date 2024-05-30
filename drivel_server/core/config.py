@@ -66,6 +66,8 @@ class Settings(BaseSettings):
     gpt_model: ChatModel = "gpt-4o"
     stt_model: str = "whisper-1"
 
+    stt_speech_rate_interval: tuple[float, float] = (0.25, 4.0)
+
     @computed_field
     @property
     def openai_api_key_file(self) -> str:
