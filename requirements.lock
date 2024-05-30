@@ -11,7 +11,7 @@
 -e file:.
 annotated-types==0.7.0
     # via pydantic
-anyio==4.3.0
+anyio==4.4.0
     # via httpx
     # via openai
     # via starlette
@@ -86,7 +86,7 @@ markupsafe==2.1.5
     # via jinja2
 mdurl==0.1.2
     # via markdown-it-py
-openai==1.30.1
+openai==1.30.5
     # via drivel-server
 orjson==3.10.3
     # via fastapi
@@ -107,11 +107,11 @@ pyasn1==0.6.0
     # via rsa
 pyasn1-modules==0.4.0
     # via google-auth
-pydantic==2.7.1
+pydantic==2.7.2
     # via fastapi
     # via openai
     # via pydantic-settings
-pydantic-core==2.18.2
+pydantic-core==2.18.3
     # via pydantic
 pydantic-settings==2.2.1
     # via drivel-server
@@ -125,7 +125,7 @@ python-multipart==0.0.9
     # via fastapi
 pyyaml==6.0.1
     # via uvicorn
-requests==2.32.1
+requests==2.32.3
     # via google-api-core
 rich==13.7.1
     # via typer
@@ -143,7 +143,7 @@ tqdm==4.66.4
     # via openai
 typer==0.12.3
     # via fastapi-cli
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via fastapi
     # via openai
     # via pydantic
@@ -153,12 +153,12 @@ ujson==5.10.0
     # via fastapi
 urllib3==2.2.1
     # via requests
-uvicorn==0.29.0
+uvicorn==0.30.0
     # via drivel-server
     # via fastapi
 uvloop==0.19.0
     # via uvicorn
-watchfiles==0.21.0
+watchfiles==0.22.0
     # via uvicorn
 websockets==12.0
     # via uvicorn

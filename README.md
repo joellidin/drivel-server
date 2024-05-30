@@ -29,7 +29,7 @@ gcloud auth application-default login
 You can run the server with
 
 ```bash
-uvicorn drivel_server.server:app --reload
+uvicorn drivel_server.main:app --reload
 ```
 
 in your virtual environment.

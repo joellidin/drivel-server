@@ -2,21 +2,23 @@
 
 import io
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from openai.types.audio import Transcription
 
 from drivel_server.clients import OpenAIClientSingleton
-from drivel_server.core.config import settings
+from drivel_server.schemas.stt import STTParameters
 
 router = APIRouter()
 
 
 @router.post("/", response_model=Transcription)
-async def speech_to_text(audio_file: UploadFile) -> Transcription:
+async def speech_to_text(
+    audio_file: UploadFile, params: STTParameters = Depends()
+) -> Transcription:
     """
     Process an audio file and return its speech-to-text transcription.
 
-    This function takes an uploaded audio file sends it to the OpenAI Whisper
+    This function takes an uploaded audio file, sends it to the OpenAI Whisper
     and returns the transcription object.
     """
     try:
@@ -25,7 +27,7 @@ async def speech_to_text(audio_file: UploadFile) -> Transcription:
         buffer = io.BytesIO(audio)
         buffer.name = audio_file.filename
         return await client.audio.transcriptions.create(
-            file=buffer, model=settings.stt_model, language="es"
+            file=buffer, model=params.model, language=params.language
         )
     except Exception as e:
         # Handle errors and exceptions
