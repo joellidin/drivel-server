@@ -2,7 +2,7 @@
 
 import io
 
-from fastapi import APIRouter, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, status
 from openai.types.audio import Transcription
 
 from drivel_server.clients import OpenAIClientSingleton
@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.post("/", response_model=Transcription)
 async def speech_to_text(
-    audio_file: UploadFile, params: STTParameters
+    audio_file: UploadFile, params: STTParameters = Depends()
 ) -> Transcription:
     """
     Process an audio file and return its speech-to-text transcription.
