@@ -23,7 +23,9 @@ async def text_to_speech(params: TTSParameters) -> Response:
         )
 
         # Select the type of audio file you want returned
-        audio_config = tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3)
+        audio_config = tts.AudioConfig(
+            audio_encoding=tts.AudioEncoding.MP3, speaking_rate=params.speaking_rate
+        )
 
         # Perform the text-to-speech request on the text input with the selected
         # voice parameters and audio file type
