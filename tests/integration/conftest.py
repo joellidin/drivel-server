@@ -8,7 +8,7 @@ class ChatInput(TypedDict):
     model: NotRequired[str]
 
 
-@pytest.fixture()
+@pytest.fixture
 def chat_default_input() -> ChatInput:
     return {
         "messages": [
