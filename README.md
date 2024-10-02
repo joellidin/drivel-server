@@ -1,5 +1,11 @@
 # Drivel server
 
+![Tests](https://github.com/joellidin/drivel-server/actions/workflows/test.yml/badge.svg)
+![Linting](https://github.com/joellidin/drivel-server/actions/workflows/lint.yml/badge.svg)
+![Formatting](https://github.com/joellidin/drivel-server/actions/workflows/code_fmt.yml/badge.svg)
+![Package version](https://img.shields.io/badge/version-v0.1.0-blue)
+![Python version](https://img.shields.io/badge/python-3.12-blue)
+
 Drivel is a Flutter-based mobile application designed to make language learning
 intuitive, engaging, and accessible for everyone. It is a chat bot with an
 interface adapted to language learners. Here is a list of features:
